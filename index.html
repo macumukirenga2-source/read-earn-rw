@@ -3,207 +3,341 @@
 <html lang="rw">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Read Earn RW</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#202b3c}
-header{background:#123b70;color:white;padding:20px;text-align:center}
-header h1{margin:0}
-nav{background:#0d2d53;padding:12px;display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
-button{background:#16733b;color:white;border:0;padding:12px 16px;border-radius:7px;cursor:pointer;font-weight:bold}
-nav button{background:#fff;color:#123b70}
-main{max-width:850px;margin:auto;padding:20px}
-.page{display:none}
-.page.active{display:block}
-.hero,.card{background:white;padding:22px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 10px #0001}
-.hero{text-align:center}
-h2{color:#123b70}
-input,textarea,select{width:100%;padding:12px;margin:8px 0 15px;border:1px solid #bbb;border-radius:7px;font-size:16px}
-textarea{min-height:140px}
-.article{border-bottom:1px solid #ddd;padding:15px 0}
-.article h3{color:#123b70}
-small{color:#687386}
-.status{font-weight:bold;color:#b36b00}
-footer{background:#123b70;color:white;text-align:center;padding:25px;margin-top:30px}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7f5;color:#203027}
+header{background:#087443;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:30px}
+nav{background:white;padding:10px;display:flex;justify-content:center;flex-wrap:wrap}
+button{background:#087443;color:white;border:0;padding:12px 15px;border-radius:7px;margin:4px;cursor:pointer}
+input,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:7px;font-size:16px}
+textarea{min-height:150px}
+main{max-width:850px;margin:20px auto;padding:12px}
+.card{background:white;padding:18px;margin:14px 0;border-radius:10px;box-shadow:0 2px 8px #ddd}
+.hidden{display:none}
+.muted{color:#777;font-size:13px}
+footer{text-align:center;padding:25px;color:#777}
+h2,h3{color:#087443}
+.danger{background:#b3261e}
 </style>
 </head>
 <body>
 
 <header>
 <h1>📚 Read Earn RW</h1>
-<p>Read • Write • Learn • Grow</p>
+<p>Soma inkuru. Andika inkuru. Tera imbere.</p>
 </header>
 
 <nav>
-<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('home')">Ahabanza</button>
+<button onclick="showPage('account')">Konti</button>
 <button onclick="showPage('writer')">Writer Dashboard</button>
 <button onclick="showPage('admin')">Admin Dashboard</button>
 </nav>
 
 <main>
+<div id="message" class="card">Murakaza neza kuri Read Earn RW!</div>
 
-<section id="home" class="page active">
-<div class="hero">
-<h2>Murakaza neza kuri Read Earn RW!</h2>
-<p>Soma inkuru, wige ubumenyi bushya kandi usangize abandi ibitekerezo byawe.</p>
-<button onclick="showPage('writer')">Andika inkuru</button>
-</div>
-<div class="card">
+<section id="home">
 <h2>Inkuru zemejwe</h2>
-<div id="published">Nta nkuru irashyirwaho.</div>
+<div id="articles">Turimo gushaka inkuru...</div>
+</section>
+
+<section id="account" class="hidden">
+<div class="card">
+<h2>Kwiyandikisha</h2>
+<input id="name" placeholder="Amazina yawe">
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password nibura inyuguti 6">
+<button onclick="signup()">Iyandikishe</button>
+<hr>
+<h2>Kwinjira</h2>
+<input id="loginEmail" type="email" placeholder="Email">
+<input id="loginPassword" type="password" placeholder="Password">
+<button onclick="login()">Injira</button>
+<button onclick="logout()">Sohoka</button>
 </div>
 </section>
 
-<section id="writer" class="page">
+<section id="writer" class="hidden">
 <div class="card">
-<h2>✍️ Writer Dashboard</h2>
-<p>Andika inkuru yawe uyohereze kuri Admin kugira ngo ayisuzume.</p>
-<form id="articleForm">
-<label>Izina ryawe</label>
-<input id="author" required placeholder="Andika izina ryawe">
-
-<label>Umutwe w'inkuru</label>
-<input id="title" required placeholder="Andika umutwe w'inkuru">
-
-<label>Icyiciro</label>
-<select id="category">
-<option>Education</option>
-<option>Technology</option>
-<option>Sports</option>
-<option>Entertainment</option>
-<option>News</option>
-<option>Health</option>
-</select>
-
-<label>Inkuru yawe</label>
-<textarea id="content" required placeholder="Andika inkuru yawe hano..."></textarea>
-
-<button type="submit">Ohereza inkuru</button>
-</form>
+<h2>Writer Dashboard ✍️</h2>
+<p id="writerInfo">Banza winjire muri konti yawe.</p>
+<input id="title" placeholder="Umutwe w'inkuru">
+<textarea id="content" placeholder="Andika inkuru yawe hano..."></textarea>
+<button onclick="submitArticle()">Ohereza inkuru</button>
 </div>
-
 <div class="card">
-<h2>Inkuru nanditse</h2>
-<div id="myArticles">Nta nkuru urandika.</div>
+<h3>Inkuru zawe</h3>
+<div id="myArticles"></div>
 </div>
 </section>
 
-<section id="admin" class="page">
+<section id="admin" class="hidden">
 <div class="card">
-<h2>🛡️ Admin Dashboard</h2>
-<p>Hano Admin asuzuma inkuru zoherejwe n'abanditsi.</p>
-<div id="pending">Nta nkuru itegereje kwemezwa.</div>
-</div>
-<div class="card">
-<h2>Inkuru zemejwe</h2>
-<div id="approved">Nta nkuru irahabwa uburenganzira.</div>
+<h2>Admin Dashboard 🔐</h2>
+<p id="adminInfo">Iki gice kigenewe Admin gusa.</p>
+<button onclick="loadAdmin()">Reba inkuru zitegereje</button>
+<div id="adminArticles"></div>
 </div>
 </section>
-
 </main>
 
 <footer>
 <p>© 2026 Read Earn RW</p>
-<p>Read • Write • Learn • Grow</p>
+<p>Dusoma, tukandika, tukunguka.</p>
 </footer>
 
 <script>
-let articles = JSON.parse(localStorage.getItem("readEarnArticles") || "[]");
+const SUPABASE_URL =
+"https://cvobpynmgnyddobphpok.supabase.co";
 
-function save(){
- localStorage.setItem("readEarnArticles",JSON.stringify(articles));
+const SUPABASE_KEY =
+"sb_publishable_LDfnymH3D7JjDq6BYL8Zgg_P1pWfZUY";
+
+const db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+let currentUser = null;
+let currentProfile = null;
+
+function message(text){
+document.getElementById("message").textContent=text;
+}
+
+function addText(parent,tag,text){
+const el=document.createElement(tag);
+el.textContent=text||"";
+parent.appendChild(el);
+return el;
 }
 
 function showPage(page){
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- document.getElementById(page).classList.add("active");
- render();
+["home","account","writer","admin"].forEach(id=>{
+document.getElementById(id).classList.add("hidden");
+});
+document.getElementById(page).classList.remove("hidden");
+
+if(page==="home")loadArticles();
+if(page==="writer")loadMyArticles();
+if(page==="admin")loadAdmin();
 }
 
-document.getElementById("articleForm").addEventListener("submit",function(e){
- e.preventDefault();
+async function refreshUser(){
+const {data}=await db.auth.getUser();
+currentUser=data.user;
+currentProfile=null;
 
- const article={
- id:Date.now(),
- author:document.getElementById("author").value,
- title:document.getElementById("title").value,
- category:document.getElementById("category").value,
- content:document.getElementById("content").value,
- status:"Pending"
- };
+if(currentUser){
+const {data:profile}=await db.from("profiles")
+.select("*").eq("id",currentUser.id).maybeSingle();
+currentProfile=profile;
+}
 
- articles.push(article);
- save();
- this.reset();
- alert("Inkuru yawe yoherejwe kuri Admin!");
- render();
+document.getElementById("writerInfo").textContent=
+currentUser
+?"Muraho "+(currentProfile?.full_name||currentUser.email)
+:"Banza winjire muri konti yawe.";
+
+document.getElementById("adminInfo").textContent=
+currentProfile?.role==="admin"
+?"Murakaza neza Admin!"
+:"Konti yawe ntabwo ifite uburenganzira bwa Admin.";
+}
+
+async function signup(){
+const name=document.getElementById("name").value.trim();
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+
+if(!name||!email||password.length<6){
+message("Uzuza amazina, email na password nibura inyuguti 6.");
+return;
+}
+
+const {data,error}=await db.auth.signUp({
+email,password,
+options:{data:{full_name:name}}
 });
 
-function render(){
- const published=document.getElementById("published");
- const my=document.getElementById("myArticles");
- const pending=document.getElementById("pending");
- const approved=document.getElementById("approved");
+if(error){message(error.message);return;}
 
- const approvedArticles=articles.filter(a=>a.status==="Approved");
- const pendingArticles=articles.filter(a=>a.status==="Pending");
-
- published.innerHTML=approvedArticles.length ?
- approvedArticles.map(a=>`
- <div class="article">
- <h3>${escapeHTML(a.title)}</h3>
- <small>${escapeHTML(a.category)} | ${escapeHTML(a.author)}</small>
- <p>${escapeHTML(a.content)}</p>
- </div>`).join("") : "Nta nkuru yemejwe irahari.";
-
- my.innerHTML=articles.length ?
- articles.map(a=>`
- <div class="article">
- <h3>${escapeHTML(a.title)}</h3>
- <small>${escapeHTML(a.category)}</small>
- <p class="status">${a.status==="Approved"?"Yemejwe":"Itegereje kwemezwa"}</p>
- </div>`).join("") : "Nta nkuru urandika.";
-
- pending.innerHTML=pendingArticles.length ?
- pendingArticles.map(a=>`
- <div class="article">
- <h3>${escapeHTML(a.title)}</h3>
- <small>${escapeHTML(a.author)} | ${escapeHTML(a.category)}</small>
- <p>${escapeHTML(a.content)}</p>
- <button onclick="approve(${a.id})">Emeza inkuru</button>
- <button onclick="reject(${a.id})" style="background:#b42318">Yanga</button>
- </div>`).join("") : "Nta nkuru itegereje kwemezwa.";
-
- approved.innerHTML=approvedArticles.length ?
- approvedArticles.map(a=>`
- <div class="article">
- <h3>${escapeHTML(a.title)}</h3>
- <small>Yanditswe na ${escapeHTML(a.author)}</small>
- </div>`).join("") : "Nta nkuru irahabwa uburenganzira.";
+if(data.session){
+await refreshUser();
+message("Konti yawe yakozwe neza!");
+}else{
+message("Reba email yawe wemeze konti, hanyuma winjire.");
+}
 }
 
-function approve(id){
- articles=articles.map(a=>a.id===id?{...a,status:"Approved"}:a);
- save();
- render();
+async function login(){
+const email=document.getElementById("loginEmail").value.trim();
+const password=document.getElementById("loginPassword").value;
+
+const {error}=await db.auth.signInWithPassword({email,password});
+
+if(error){message(error.message);return;}
+
+await refreshUser();
+message("Winjiye neza!");
+showPage("writer");
 }
 
-function reject(id){
- articles=articles.filter(a=>a.id!==id);
- save();
- render();
+async function logout(){
+const {error}=await db.auth.signOut();
+if(error){message(error.message);return;}
+currentUser=null;
+currentProfile=null;
+message("Wasohotse muri konti yawe.");
+showPage("home");
 }
 
-function escapeHTML(value){
- return String(value).replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",
- '"':"&quot;","'":"&#39;"
- })[c]);
+async function loadArticles(){
+const box=document.getElementById("articles");
+box.replaceChildren();
+
+const {data,error}=await db.from("articles")
+.select("id,title,content,author_name,created_at")
+.eq("status","approved")
+.order("created_at",{ascending:false});
+
+if(error){addText(box,"p","Habaye ikibazo mu kubona inkuru.");return;}
+if(!data?.length){addText(box,"p","Nta nkuru zemejwe ziraboneka.");return;}
+
+data.forEach(a=>{
+const card=document.createElement("article");
+card.className="card";
+addText(card,"h3",a.title);
+addText(card,"p",a.content);
+addText(card,"small","Yanditswe na: "+a.author_name);
+box.appendChild(card);
+});
 }
 
-render();
+async function submitArticle(){
+if(!currentUser){
+message("Banza winjire muri konti yawe.");
+showPage("account");
+return;
+}
+
+const title=document.getElementById("title").value.trim();
+const content=document.getElementById("content").value.trim();
+
+if(!title||!content){
+message("Uzuza umutwe n'inkuru.");
+return;
+}
+
+const {error}=await db.from("articles").insert({
+title,
+content,
+author_name:currentProfile?.full_name||currentUser.email,
+author_id:currentUser.id,
+status:"pending"
+});
+
+if(error){message(error.message);return;}
+
+document.getElementById("title").value="";
+document.getElementById("content").value="";
+message("Inkuru yoherejwe. Tegereza Admin ayemeze.");
+loadMyArticles();
+}
+
+async function loadMyArticles(){
+const box=document.getElementById("myArticles");
+box.replaceChildren();
+
+if(!currentUser){
+addText(box,"p","Banza winjire muri konti yawe.");
+return;
+}
+
+const {data,error}=await db.from("articles")
+.select("title,status,created_at")
+.eq("author_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error){addText(box,"p","Ntibyashobotse kubona inkuru zawe.");return;}
+if(!data?.length){addText(box,"p","Nta nkuru uratanga.");return;}
+
+data.forEach(a=>{
+const card=document.createElement("div");
+card.className="card";
+addText(card,"h3",a.title);
+addText(card,"p","Imiterere: "+a.status);
+box.appendChild(card);
+});
+}
+
+async function loadAdmin(){
+const box=document.getElementById("adminArticles");
+box.replaceChildren();
+
+if(!currentUser||currentProfile?.role!=="admin"){
+addText(box,"p","Ntabwo wemerewe gukoresha Admin Dashboard.");
+return;
+}
+
+const {data,error}=await db.from("articles")
+.select("id,title,content,author_name")
+.eq("status","pending")
+.order("created_at",{ascending:true});
+
+if(error){addText(box,"p","Habaye ikibazo: "+error.message);return;}
+if(!data?.length){addText(box,"p","Nta nkuru zitegereje kwemezwa.");return;}
+
+data.forEach(a=>{
+const card=document.createElement("div");
+card.className="card";
+addText(card,"h3",a.title);
+addText(card,"p",a.content);
+addText(card,"small","Yanditswe na: "+a.author_name);
+
+const approve=document.createElement("button");
+approve.textContent="Emeza inkuru";
+approve.onclick=()=>updateArticle(a.id,"approved");
+
+const reject=document.createElement("button");
+reject.textContent="Anga inkuru";
+reject.className="danger";
+reject.onclick=()=>updateArticle(a.id,"rejected");
+
+card.appendChild(approve);
+card.appendChild(reject);
+box.appendChild(card);
+});
+}
+
+async function updateArticle(id,status){
+if(!currentUser||currentProfile?.role!=="admin"){
+message("Ntabwo wemerewe gukora iki gikorwa.");
+return;
+}
+
+const {error}=await db.from("articles")
+.update({status}).eq("id",id);
+
+if(error){message(error.message);return;}
+
+message("Igikorwa cyakozwe neza.");
+loadAdmin();
+}
+
+db.auth.onAuthStateChange(()=>{
+setTimeout(async()=>{await refreshUser();},0);
+});
+
+(async()=>{
+await refreshUser();
+await loadArticles();
+})();
 </script>
 </body>
- </html>
- 
+</html>

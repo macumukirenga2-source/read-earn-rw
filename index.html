@@ -1,79 +1,31 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="rw">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Read Earn RW</title>
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:#f5f7fb;
- color:#202b3c;
-}
-header{
- background:#123b70;
- color:white;
- padding:20px;
- text-align:center;
-}
-header h1{margin:0;font-size:27px}
-nav{
- background:#0d2d53;
- padding:14px;
- text-align:center;
-}
-nav a{
- color:white;
- text-decoration:none;
- margin:0 10px;
- font-weight:bold;
-}
-.hero{
- padding:55px 20px;
- text-align:center;
- background:#e5efff;
-}
-.hero h2{font-size:30px;color:#123b70}
-.hero p{line-height:1.7}
-.btn{
- display:inline-block;
- background:#16834b;
- color:white;
- padding:13px 22px;
- border-radius:7px;
- text-decoration:none;
- margin:8px;
- font-weight:bold;
-}
-section{padding:25px 18px}
-section h2{text-align:center;color:#123b70}
-.cards{
- display:grid;
- grid-template-columns:1fr;
- gap:16px;
- max-width:700px;
- margin:auto;
-}
-.card{
- background:white;
- padding:22px;
- border-radius:12px;
- box-shadow:0 2px 10px #0001;
-}
-.card h3{color:#123b70}
-footer{
- background:#123b70;
- color:white;
- text-align:center;
- padding:25px;
- margin-top:30px;
-}
-@media(min-width:600px){
- .cards{grid-template-columns:repeat(2,1fr)}
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#202b3c}
+header{background:#123b70;color:white;padding:20px;text-align:center}
+header h1{margin:0}
+nav{background:#0d2d53;padding:12px;display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+button{background:#16733b;color:white;border:0;padding:12px 16px;border-radius:7px;cursor:pointer;font-weight:bold}
+nav button{background:#fff;color:#123b70}
+main{max-width:850px;margin:auto;padding:20px}
+.page{display:none}
+.page.active{display:block}
+.hero,.card{background:white;padding:22px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 10px #0001}
+.hero{text-align:center}
+h2{color:#123b70}
+input,textarea,select{width:100%;padding:12px;margin:8px 0 15px;border:1px solid #bbb;border-radius:7px;font-size:16px}
+textarea{min-height:140px}
+.article{border-bottom:1px solid #ddd;padding:15px 0}
+.article h3{color:#123b70}
+small{color:#687386}
+.status{font-weight:bold;color:#b36b00}
+footer{background:#123b70;color:white;text-align:center;padding:25px;margin-top:30px}
 </style>
 </head>
 <body>
@@ -84,66 +36,174 @@ footer{
 </header>
 
 <nav>
-<a href="#home">Home</a>
-<a href="#articles">Articles</a>
-<a href="#about">About</a>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('writer')">Writer Dashboard</button>
+<button onclick="showPage('admin')">Admin Dashboard</button>
 </nav>
 
-<div class="hero" id="home">
-<h2>Welcome to Read Earn RW!</h2>
-<p>
-Discover interesting stories, read useful articles
-and share your knowledge with the world.
-</p>
-<a class="btn" href="#articles">Explore Articles</a>
-<a class="btn" href="#about">Learn More</a>
+<main>
+
+<section id="home" class="page active">
+<div class="hero">
+<h2>Murakaza neza kuri Read Earn RW!</h2>
+<p>Soma inkuru, wige ubumenyi bushya kandi usangize abandi ibitekerezo byawe.</p>
+<button onclick="showPage('writer')">Andika inkuru</button>
 </div>
-
-<section id="articles">
-<h2>Latest Articles</h2>
-<div class="cards">
-
 <div class="card">
-<h3>Education</h3>
-<p>Discover educational ideas and improve your knowledge every day.</p>
-</div>
-
-<div class="card">
-<h3>Technology</h3>
-<p>Explore technology, innovation and the digital world.</p>
-</div>
-
-<div class="card">
-<h3>Sports</h3>
-<p>Read interesting sports stories and updates.</p>
-</div>
-
-<div class="card">
-<h3>Entertainment</h3>
-<p>Enjoy stories about entertainment and lifestyle.</p>
-</div>
-
+<h2>Inkuru zemejwe</h2>
+<div id="published">Nta nkuru irashyirwaho.</div>
 </div>
 </section>
 
-<section id="about">
-<h2>About Read Earn RW</h2>
+<section id="writer" class="page">
 <div class="card">
-<p>
-Read Earn RW is a platform designed to connect
-readers and writers through useful and interesting content.
-</p>
-<p>
-Our goal is to encourage reading, writing and learning.
-</p>
+<h2>✍️ Writer Dashboard</h2>
+<p>Andika inkuru yawe uyohereze kuri Admin kugira ngo ayisuzume.</p>
+<form id="articleForm">
+<label>Izina ryawe</label>
+<input id="author" required placeholder="Andika izina ryawe">
+
+<label>Umutwe w'inkuru</label>
+<input id="title" required placeholder="Andika umutwe w'inkuru">
+
+<label>Icyiciro</label>
+<select id="category">
+<option>Education</option>
+<option>Technology</option>
+<option>Sports</option>
+<option>Entertainment</option>
+<option>News</option>
+<option>Health</option>
+</select>
+
+<label>Inkuru yawe</label>
+<textarea id="content" required placeholder="Andika inkuru yawe hano..."></textarea>
+
+<button type="submit">Ohereza inkuru</button>
+</form>
+</div>
+
+<div class="card">
+<h2>Inkuru nanditse</h2>
+<div id="myArticles">Nta nkuru urandika.</div>
 </div>
 </section>
+
+<section id="admin" class="page">
+<div class="card">
+<h2>🛡️ Admin Dashboard</h2>
+<p>Hano Admin asuzuma inkuru zoherejwe n'abanditsi.</p>
+<div id="pending">Nta nkuru itegereje kwemezwa.</div>
+</div>
+<div class="card">
+<h2>Inkuru zemejwe</h2>
+<div id="approved">Nta nkuru irahabwa uburenganzira.</div>
+</div>
+</section>
+
+</main>
 
 <footer>
-<h3>Read Earn RW</h3>
-<p>Read more. Learn more. Grow together.</p>
-<p>© 2026 Read Earn RW. All rights reserved.</p>
+<p>© 2026 Read Earn RW</p>
+<p>Read • Write • Learn • Grow</p>
 </footer>
 
+<script>
+let articles = JSON.parse(localStorage.getItem("readEarnArticles") || "[]");
+
+function save(){
+ localStorage.setItem("readEarnArticles",JSON.stringify(articles));
+}
+
+function showPage(page){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(page).classList.add("active");
+ render();
+}
+
+document.getElementById("articleForm").addEventListener("submit",function(e){
+ e.preventDefault();
+
+ const article={
+ id:Date.now(),
+ author:document.getElementById("author").value,
+ title:document.getElementById("title").value,
+ category:document.getElementById("category").value,
+ content:document.getElementById("content").value,
+ status:"Pending"
+ };
+
+ articles.push(article);
+ save();
+ this.reset();
+ alert("Inkuru yawe yoherejwe kuri Admin!");
+ render();
+});
+
+function render(){
+ const published=document.getElementById("published");
+ const my=document.getElementById("myArticles");
+ const pending=document.getElementById("pending");
+ const approved=document.getElementById("approved");
+
+ const approvedArticles=articles.filter(a=>a.status==="Approved");
+ const pendingArticles=articles.filter(a=>a.status==="Pending");
+
+ published.innerHTML=approvedArticles.length ?
+ approvedArticles.map(a=>`
+ <div class="article">
+ <h3>${escapeHTML(a.title)}</h3>
+ <small>${escapeHTML(a.category)} | ${escapeHTML(a.author)}</small>
+ <p>${escapeHTML(a.content)}</p>
+ </div>`).join("") : "Nta nkuru yemejwe irahari.";
+
+ my.innerHTML=articles.length ?
+ articles.map(a=>`
+ <div class="article">
+ <h3>${escapeHTML(a.title)}</h3>
+ <small>${escapeHTML(a.category)}</small>
+ <p class="status">${a.status==="Approved"?"Yemejwe":"Itegereje kwemezwa"}</p>
+ </div>`).join("") : "Nta nkuru urandika.";
+
+ pending.innerHTML=pendingArticles.length ?
+ pendingArticles.map(a=>`
+ <div class="article">
+ <h3>${escapeHTML(a.title)}</h3>
+ <small>${escapeHTML(a.author)} | ${escapeHTML(a.category)}</small>
+ <p>${escapeHTML(a.content)}</p>
+ <button onclick="approve(${a.id})">Emeza inkuru</button>
+ <button onclick="reject(${a.id})" style="background:#b42318">Yanga</button>
+ </div>`).join("") : "Nta nkuru itegereje kwemezwa.";
+
+ approved.innerHTML=approvedArticles.length ?
+ approvedArticles.map(a=>`
+ <div class="article">
+ <h3>${escapeHTML(a.title)}</h3>
+ <small>Yanditswe na ${escapeHTML(a.author)}</small>
+ </div>`).join("") : "Nta nkuru irahabwa uburenganzira.";
+}
+
+function approve(id){
+ articles=articles.map(a=>a.id===id?{...a,status:"Approved"}:a);
+ save();
+ render();
+}
+
+function reject(id){
+ articles=articles.filter(a=>a.id!==id);
+ save();
+ render();
+}
+
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",
+ '"':"&quot;","'":"&#39;"
+ })[c]);
+}
+
+render();
+</script>
 </body>
-</html>
+ </html>
+ 
